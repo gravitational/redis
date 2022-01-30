@@ -9,8 +9,10 @@ import (
 
 type Reader = proto.Reader
 type Writer = proto.Writer
+type RedisError = proto.RedisError
 
 const ArrayReply = proto.ArrayReply
+const IntReply = proto.IntReply
 
 func NewReader(rd io.Reader) *Reader {
 	return proto.NewReader(rd)
