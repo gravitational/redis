@@ -59,6 +59,10 @@ func (w *Writer) writeLen(n int) error {
 	return err
 }
 
+func (w *Writer) WriteLen(n int) error {
+	return w.writeLen(n)
+}
+
 func (w *Writer) WriteArg(v interface{}) error {
 	switch v := v.(type) {
 	case nil:
