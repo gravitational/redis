@@ -462,6 +462,11 @@ func (cmd *Cmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
+func (cmd *Cmd) ReadReply(rd *proto.Reader) (err error) {
+	cmd.val, err = rd.ReadReply(sliceParser)
+	return err
+}
+
 // sliceParser implements proto.MultiBulkParse.
 func sliceParser(rd *proto.Reader, n int64) (interface{}, error) {
 	vals := make([]interface{}, n)
