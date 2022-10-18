@@ -128,6 +128,10 @@ type Options struct {
 
 	// Enables read only queries on slave/follower nodes.
 	readOnly bool
+
+	// DisableAuthOnConnect (Teleport) disables sending AUTH or HELLO commands
+	// on new connection.
+	DisableAuthOnConnect bool
 }
 
 func (opt *Options) init() {
