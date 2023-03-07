@@ -1,6 +1,8 @@
 # Example for go-redis OpenTelemetry instrumentation
 
-See [Monitoring performance and errors](https://redis.uptrace.dev/guide/tracing.html) for details.
+See
+[Monitoring Go Redis Performance and Errors](https://redis.uptrace.dev/guide/go-redis-monitoring.html)
+for details.
 
 This example requires Redis Server on port `:6379`. You can start Redis Server using Docker:
 
@@ -16,19 +18,23 @@ You can run this example with different OpenTelemetry exporters by providing env
 go run .
 ```
 
+[Uptrace](https://github.com/uptrace/uptrace) exporter:
+
+```shell
+UPTRACE_DSN="https://<token>@uptrace.dev/<project_id>" go run .
+```
+
 **Jaeger** exporter:
 
 ```shell
 OTEL_EXPORTER_JAEGER_ENDPOINT=http://localhost:14268/api/traces go run .
 ```
 
-**Uptrace** exporter:
-
-```shell
-UPTRACE_DSN="https://<token>@uptrace.dev/<project_id>" go run .
-```
+To instrument Redis Cluster client, see
+[go-redis-cluster](https://github.com/uptrace/opentelemetry-go-extra/tree/main/example/go-redis-cluster)
+example.
 
 ## Links
 
-- [Find instrumentations](https://opentelemetry.uptrace.dev/instrumentations/?lang=go)
-- [OpenTelemetry Tracing API](https://opentelemetry.uptrace.dev/guide/go-tracing.html)
+- [OpenTelemetry Go instrumentations](https://uptrace.dev/opentelemetry/instrumentations/?lang=go)
+- [OpenTelemetry Go Tracing API](https://uptrace.dev/opentelemetry/go-tracing.html)

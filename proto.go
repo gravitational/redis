@@ -4,15 +4,15 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/go-redis/redis/v8/internal/proto"
+	"github.com/go-redis/redis/v9/internal/proto"
 )
 
 type Reader = proto.Reader
 type Writer = proto.Writer
 type RedisError = proto.RedisError
 
-const ArrayReply = proto.ArrayReply
-const IntReply = proto.IntReply
+const RespArray = proto.RespArray
+const RespInt = proto.RespInt
 
 func NewReader(rd io.Reader) *Reader {
 	return proto.NewReader(rd)

@@ -5,12 +5,12 @@ import (
 	"log"
 	"sync"
 
+	"github.com/uptrace/opentelemetry-go-extra/otelplay"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 
-	"github.com/go-redis/redis/extra/redisotel/v8"
-	"github.com/go-redis/redis/v8"
-	"github.com/uptrace/opentelemetry-go-extra/otelplay"
+	"github.com/go-redis/redis/extra/redisotel/v9"
+	"github.com/go-redis/redis/v9"
 )
 
 var tracer = otel.Tracer("redisexample")
@@ -24,7 +24,9 @@ func main() {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: ":6379",
 	})
-	rdb.AddHook(redisotel.TracingHook{})
+	if err := redisotel.InstrumentTracing(rdb); err != nil {
+		panic(err)
+	}
 
 	ctx, span := tracer.Start(ctx, "handleRequest")
 	defer span.End()

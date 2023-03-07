@@ -3,13 +3,15 @@ package proto_test
 import (
 	"bytes"
 	"encoding"
+	"fmt"
+	"net"
 	"testing"
 	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/go-redis/redis/v8/internal/proto"
+	"github.com/go-redis/redis/v9/internal/proto"
 )
 
 type MyType struct{}
@@ -64,6 +66,13 @@ var _ = Describe("WriteBuffer", func() {
 
 		Expect(buf.Len()).To(Equal(15))
 	})
+
+	It("should append net.IP", func() {
+		ip := net.ParseIP("192.168.1.1")
+		err := wr.WriteArgs([]interface{}{ip})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(buf.String()).To(Equal(fmt.Sprintf("*1\r\n$16\r\n%s\r\n", bytes.NewBuffer(ip))))
+	})
 })
 
 type discard struct{}
@@ -89,5 +98,32 @@ func BenchmarkWriteBuffer_Append(b *testing.B) {
 		if err != nil {
 			b.Fatal(err)
 		}
+	}
+}
+
+func TestWriteStatus(t *testing.T) {
+	inputStatusBytes := []byte("+status\r\n")
+
+	// Read it.
+	reader := proto.NewReader(bytes.NewReader(inputStatusBytes))
+	readStatus, err := reader.ReadReply()
+	if err != nil {
+		t.Errorf("Failed to ReadReply: %v", err)
+	}
+
+	if readStatus != proto.StatusString("status") {
+		t.Errorf("expect read %v but got %v", "status", readStatus)
+	}
+
+	// Write it.
+	outputStatusBytes := new(bytes.Buffer)
+	writer := proto.NewWriter(outputStatusBytes)
+	err = writer.WriteArg(readStatus)
+	if err != nil {
+		t.Errorf("Failed to WriteArg: %v", err)
+	}
+
+	if string(inputStatusBytes) != outputStatusBytes.String() {
+		t.Errorf("expect written %v but got %v", string(inputStatusBytes), outputStatusBytes.String())
 	}
 }
