@@ -271,49 +271,51 @@ func (c *baseClient) initConn(ctx context.Context, cn *pool.Conn) error {
 	}
 	cn.Inited = true
 
-	username, password := c.opt.Username, c.opt.Password
-	if c.opt.CredentialsProvider != nil {
-		username, password = c.opt.CredentialsProvider()
-	}
-
 	connPool := pool.NewSingleConnPool(c.connPool, cn)
 	conn := newConn(c.opt, connPool)
 
-	var auth bool
+	if !c.opt.DisableAuthOnConnect {
+		username, password := c.opt.Username, c.opt.Password
+		if c.opt.CredentialsProvider != nil {
+			username, password = c.opt.CredentialsProvider()
+		}
 
-	// For redis-server < 6.0 that does not support the Hello command,
-	// we continue to provide services with RESP2.
-	if err := conn.Hello(ctx, 3, username, password, "").Err(); err == nil {
-		auth = true
-	} else if !strings.HasPrefix(err.Error(), "ERR unknown command") {
-		return err
-	}
+		var auth bool
 
-	_, err := conn.Pipelined(ctx, func(pipe Pipeliner) error {
-		if !auth && password != "" {
-			if username != "" {
-				pipe.AuthACL(ctx, username, password)
-			} else {
-				pipe.Auth(ctx, password)
+		// For redis-server < 6.0 that does not support the Hello command,
+		// we continue to provide services with RESP2.
+		if err := conn.Hello(ctx, 3, username, password, "").Err(); err == nil {
+			auth = true
+		} else if !strings.HasPrefix(err.Error(), "ERR unknown command") {
+			return err
+		}
+
+		_, err := conn.Pipelined(ctx, func(pipe Pipeliner) error {
+			if !auth && password != "" {
+				if username != "" {
+					pipe.AuthACL(ctx, username, password)
+				} else {
+					pipe.Auth(ctx, password)
+				}
 			}
-		}
 
-		if c.opt.DB > 0 {
-			pipe.Select(ctx, c.opt.DB)
-		}
+			if c.opt.DB > 0 {
+				pipe.Select(ctx, c.opt.DB)
+			}
 
-		if c.opt.readOnly {
-			pipe.ReadOnly(ctx)
-		}
+			if c.opt.readOnly {
+				pipe.ReadOnly(ctx)
+			}
 
-		if c.opt.ClientName != "" {
-			pipe.ClientSetName(ctx, c.opt.ClientName)
-		}
+			if c.opt.ClientName != "" {
+				pipe.ClientSetName(ctx, c.opt.ClientName)
+			}
 
-		return nil
-	})
-	if err != nil {
-		return err
+			return nil
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	if c.opt.OnConnect != nil {
