@@ -31,9 +31,6 @@ const (
 	RespPush      = '>' // ><len>\r\n... (same as Array)
 )
 
-// StatusString is the read golang type of the RespStatus.
-type StatusString string
-
 // Not used temporarily.
 // Redis has not used these two data types for the time being, and will implement them later.
 // Streamed           = "EOF:"
@@ -162,7 +159,7 @@ func (r *Reader) ReadReply() (interface{}, error) {
 
 	switch line[0] {
 	case RespStatus:
-		return StatusString(line[1:]), nil
+		return string(line[1:]), nil
 	case RespInt:
 		return util.ParseInt(line[1:], 10, 64)
 	case RespFloat:

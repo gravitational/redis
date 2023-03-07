@@ -100,30 +100,3 @@ func BenchmarkWriteBuffer_Append(b *testing.B) {
 		}
 	}
 }
-
-func TestWriteStatus(t *testing.T) {
-	inputStatusBytes := []byte("+status\r\n")
-
-	// Read it.
-	reader := proto.NewReader(bytes.NewReader(inputStatusBytes))
-	readStatus, err := reader.ReadReply()
-	if err != nil {
-		t.Errorf("Failed to ReadReply: %v", err)
-	}
-
-	if readStatus != proto.StatusString("status") {
-		t.Errorf("expect read %v but got %v", "status", readStatus)
-	}
-
-	// Write it.
-	outputStatusBytes := new(bytes.Buffer)
-	writer := proto.NewWriter(outputStatusBytes)
-	err = writer.WriteArg(readStatus)
-	if err != nil {
-		t.Errorf("Failed to WriteArg: %v", err)
-	}
-
-	if string(inputStatusBytes) != outputStatusBytes.String() {
-		t.Errorf("expect written %v but got %v", string(inputStatusBytes), outputStatusBytes.String())
-	}
-}
