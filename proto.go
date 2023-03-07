@@ -15,7 +15,7 @@ const RespArray = proto.RespArray
 const RespInt = proto.RespInt
 
 func NewReader(rd io.Reader) *Reader {
-	return proto.NewReader(rd)
+	return proto.NewReader(rd, proto.ReaderOptUseStatusStringType)
 }
 
 func NewWriter(wr *bytes.Buffer) *Writer {

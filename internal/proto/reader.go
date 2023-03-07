@@ -55,13 +55,28 @@ func ParseErrorReply(line []byte) error {
 
 //------------------------------------------------------------------------------
 
-type Reader struct {
-	rd *bufio.Reader
+type readerOpt struct {
+	// useStatusStringType uses `StatusString` type instead of string for RespStatus.
+	useStatusStringType bool
 }
 
-func NewReader(rd io.Reader) *Reader {
+func ReaderOptUseStatusStringType(o *readerOpt) {
+	o.useStatusStringType = true
+}
+
+type Reader struct {
+	rd  *bufio.Reader
+	opt readerOpt
+}
+
+func NewReader(rd io.Reader, opts ...func(o *readerOpt)) *Reader {
+	opt := readerOpt{}
+	for _, applyOpt := range opts {
+		applyOpt(&opt)
+	}
 	return &Reader{
-		rd: bufio.NewReader(rd),
+		rd:  bufio.NewReader(rd),
+		opt: opt,
 	}
 }
 
@@ -162,7 +177,10 @@ func (r *Reader) ReadReply() (interface{}, error) {
 
 	switch line[0] {
 	case RespStatus:
-		return StatusString(line[1:]), nil
+		if r.opt.useStatusStringType {
+			return StatusString(line[1:]), nil
+		}
+		return string(line[1:]), nil
 	case RespInt:
 		return util.ParseInt(line[1:], 10, 64)
 	case RespFloat:
