@@ -12,6 +12,7 @@ import (
 	. "github.com/bsm/gomega"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/redis/go-redis/v9/internal/proto"
 )
 
 type redisHookError struct{}
@@ -192,7 +193,7 @@ var _ = Describe("Client", func() {
 		Expect(client.Echo(ctx, "hello").Err()).NotTo(HaveOccurred())
 
 		Expect(cmd.Err()).NotTo(HaveOccurred())
-		Expect(cmd.Val()).To(Equal("PONG"))
+		Expect(cmd.Val()).To(Equal(proto.StatusString("PONG")))
 	})
 
 	It("should retry command on network error", func() {

@@ -105,7 +105,7 @@ func TestWriteStatus(t *testing.T) {
 	inputStatusBytes := []byte("+status\r\n")
 
 	// Read it.
-	reader := proto.NewReader(bytes.NewReader(inputStatusBytes), proto.ReaderOptUseStatusStringType)
+	reader := proto.NewReader(bytes.NewReader(inputStatusBytes))
 	readStatus, err := reader.ReadReply()
 	if err != nil {
 		t.Errorf("Failed to ReadReply: %v", err)
