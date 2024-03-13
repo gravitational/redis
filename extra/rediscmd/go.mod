@@ -6,6 +6,6 @@ replace github.com/redis/go-redis/v9 => ../..
 
 require (
 	github.com/bsm/ginkgo/v2 v2.5.0
-	github.com/bsm/gomega v1.20.0
+	github.com/bsm/gomega v1.27.10
 	github.com/redis/go-redis/v9 v9.0.2
 )
