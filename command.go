@@ -482,6 +482,11 @@ func (cmd *Cmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
+func (cmd *Cmd) ReadReply(rd *proto.Reader) (err error) {
+	cmd.val, err = rd.ReadReply()
+	return err
+}
+
 //------------------------------------------------------------------------------
 
 type SliceCmd struct {
