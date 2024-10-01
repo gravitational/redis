@@ -71,6 +71,8 @@ func (w *Writer) WriteArg(v interface{}) error {
 		return w.string(v)
 	case *string:
 		return w.string(*v)
+	case StatusString:
+		return w.status(v)
 	case []byte:
 		return w.bytes(v)
 	case int:
@@ -160,6 +162,18 @@ func (w *Writer) bytes(b []byte) error {
 	}
 
 	if _, err := w.Write(b); err != nil {
+		return err
+	}
+
+	return w.crlf()
+}
+
+func (w *Writer) status(s StatusString) error {
+	if err := w.WriteByte(RespStatus); err != nil {
+		return err
+	}
+
+	if _, err := w.Write([]byte(s)); err != nil {
 		return err
 	}
 

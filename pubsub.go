@@ -366,6 +366,10 @@ func (p *Pong) String() string {
 
 func (c *PubSub) newMessage(reply interface{}) (interface{}, error) {
 	switch reply := reply.(type) {
+	case proto.StatusString:
+		return &Pong{
+			Payload: string(reply),
+		}, nil
 	case string:
 		return &Pong{
 			Payload: reply,

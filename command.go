@@ -483,7 +483,7 @@ func (cmd *Cmd) readReply(rd *proto.Reader) (err error) {
 }
 
 func (cmd *Cmd) ReadReply(rd *proto.Reader) (err error) {
-	cmd.val, err = rd.ReadReply(sliceParser)
+	cmd.val, err = rd.ReadReply()
 	return err
 }
 
